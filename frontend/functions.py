@@ -9,7 +9,7 @@ def verify_claim(claim_text: str, source_url: str = "") -> dict:
         return {}
 
     return {
-        "claim": claim_text if claim_text else source_url,
+        "claim": claim_text.strip() or source_url.strip(),
         "rating": "Contradicted",
         "reasoning": (
             "Medical consensus and formal reporting confirm that while lemon water "
