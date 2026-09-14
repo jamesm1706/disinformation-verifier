@@ -15,14 +15,14 @@ def render_page_header(title: str, description: str):
 def render_verdict_badge(rating: str):
     """Render status indicators pairing color with text and icons (Accessibility rule)."""
     badge_styles = {
-        "Contradicted": (theme.COLOR_DANGER_BG, theme.COLOR_DANGER_FG, "❌"),
-        "Supported": (theme.COLOR_SUCCESS_BG, theme.COLOR_SUCCESS_FG, "✅"),
-        "Missing Context": (theme.COLOR_WARNING_BG, theme.COLOR_WARNING_FG, "⚠️"),
-        "Unclear": (theme.COLOR_APP_BG, theme.COLOR_TEXT_MAIN, "❓")
+        "Contradicted": (theme.COLOUR_DANGER_BG, theme.COLOUR_DANGER_FG, "❌"),
+        "Supported": (theme.COLOUR_SUCCESS_BG, theme.COLOUR_SUCCESS_FG, "✅"),
+        "Missing Context": (theme.COLOUR_WARNING_BG, theme.COLOUR_WARNING_FG, "⚠️"),
+        "Unclear": (theme.COLOUR_APP_BG, theme.COLOUR_TEXT_MAIN, "❓")
     }
 
     bg, fg, icon = badge_styles.get(
-        rating, (theme.COLOR_APP_BG, theme.COLOR_TEXT_MAIN, "ℹ️"))
+        rating, (theme.COLOUR_APP_BG, theme.COLOUR_TEXT_MAIN, "ℹ️"))
 
     badge_html = f"""
     <div style="
@@ -86,9 +86,9 @@ def render_claim_verification_view():
 
         for src in result["sources"]:
             st.markdown(f"""
-            <div style="background-color: {theme.COLOR_APP_BG}; border-left: 3px solid {theme.COLOR_PRIMARY}; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 8px 8px 0;">
-                <strong style="color: {theme.COLOR_TEXT_MAIN};">{src['name']}</strong><br>
-                <span style="font-size: 14px; color: {theme.COLOR_TEXT_MUTED};">"{src['snippet']}"</span>
+            <div style="background-color: {theme.COLOUR_APP_BG}; border-left: 3px solid {theme.COLOUR_PRIMARY}; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 8px 8px 0;">
+                <strong style="color: {theme.COLOUR_TEXT_MAIN};">{src['name']}</strong><br>
+                <span style="font-size: 14px; color: {theme.COLOUR_TEXT_MUTED};">"{src['snippet']}"</span>
             </div>
             """, unsafe_allow_html=True)
 
@@ -108,9 +108,9 @@ def render_breaking_stories_view():
 
         with col_content:
             st.markdown(
-                f"<span style='font-size: 12px; color: {theme.COLOR_TEXT_MUTED};'>{item['time']} • {item['outlet']}</span>", unsafe_allow_html=True)
+                f"<span style='font-size: 12px; color: {theme.COLOUR_TEXT_MUTED};'>{item['time']} • {item['outlet']}</span>", unsafe_allow_html=True)
             st.markdown(
-                f"<strong style='font-size: 16px; color: {theme.COLOR_TEXT_MAIN};'>{item['title']}</strong>", unsafe_allow_html=True)
+                f"<strong style='font-size: 16px; color: {theme.COLOUR_TEXT_MAIN};'>{item['title']}</strong>", unsafe_allow_html=True)
 
         with col_badge:
             render_verdict_badge(item["status"])
@@ -151,7 +151,7 @@ def render_outlet_credibility_view():
             '<div class="ui-card" style="text-align: center;">', unsafe_allow_html=True)
         st.caption("Total Claims Checked")
         st.markdown(
-            f"<h2 style='margin: 0 !important; color: {theme.COLOR_PRIMARY} !important;'>1,248</h2>", unsafe_allow_html=True)
+            f"<h2 style='margin: 0 !important; color: {theme.COLOUR_PRIMARY} !important;'>1,248</h2>", unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     with m2:
@@ -159,7 +159,7 @@ def render_outlet_credibility_view():
             '<div class="ui-card" style="text-align: center;">', unsafe_allow_html=True)
         st.caption("Primary Source")
         st.markdown(
-            f"<h2 style='margin: 0 !important; color: {theme.COLOR_TEXT_MAIN} !important;'>Full Fact</h2>", unsafe_allow_html=True)
+            f"<h2 style='margin: 0 !important; color: {theme.COLOUR_TEXT_MAIN} !important;'>Full Fact</h2>", unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     with m3:
