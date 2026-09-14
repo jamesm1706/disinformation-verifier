@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          find . -name "requirements.txt" -not -path "*/.venv/*" -exec pip install -r {} \;
           pip install pylint
 
       - name: Run Pylint
