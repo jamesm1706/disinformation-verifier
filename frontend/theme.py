@@ -105,6 +105,14 @@ def inject_custom_theme():
             padding: 0 !important;
         }}
 
+        .ui-card {{
+            background-color: {COLOUR_CARD_BG};
+            border: 1px solid {COLOUR_BORDER};
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }}
+
         #MainMenu, footer {{ visibility: hidden; }}
     </style>
     """
