@@ -48,7 +48,7 @@ def get_filtered_logs(query: str, status: str) -> pd.DataFrame:
     ])
 
     if query:
-        df = df[df["Claim Statement"].str.contains(query, case=False)]
+        df = df[df["Claim Statement"].str.contains(query, case=False, regex=False)]
     if status != "All":
         df = df[df["Verdict"] == status]
 
