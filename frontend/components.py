@@ -13,7 +13,7 @@ def render_page_header(title: str, description: str):
 
 
 def render_verdict_badge(rating: str):
-    """Render status indicators pairing color with text and icons (Accessibility rule)."""
+    """Render status indicators pairing colour with text and icons (Accessibility rule)."""
     badge_styles = {
         "Contradicted": (theme.COLOUR_DANGER_BG, theme.COLOUR_DANGER_FG, "❌"),
         "Supported": (theme.COLOUR_SUCCESS_BG, theme.COLOUR_SUCCESS_FG, "✅"),
