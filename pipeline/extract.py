@@ -117,12 +117,14 @@ if __name__ == "__main__":
     load_dotenv()
     input_text = input("Enter your claim: ")
     analysis = get_claims_from_user(input_text)
+    print(analysis)
     for claim in analysis["claims"]:
         if not claim["checkable"]:
             continue
         article_text = extract(claim["text"])
         result = compare_claims_with_article(claim["text"], article_text)
         print(result)
+
 """
 Use the tbs parameter to filter results by time. Note that tbs only applies to web source results
 — it does not filter news or images results. If you need time-filtered news, consider using a web source with
