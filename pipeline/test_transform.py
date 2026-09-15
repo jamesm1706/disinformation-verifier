@@ -1,6 +1,6 @@
 import pandas as pd
  
-from transform import build_dataframe, clean_list_value, clean_text_value
+from transform import build_dataframe, clean_list_value, clean_text_value, filter_tags
 
 
 def test_build_dataframe_from_list_of_dicts():
@@ -45,3 +45,47 @@ def test_clean_text_value_converts_none_to_empty_string():
  
 def test_clean_text_value_converts_non_string_to_empty_string():
     assert clean_text_value(123) == ""
+
+
+def test_filter_tags_removes_excluded_tags():
+    tags = ["fact-checking", "economy", "inflation"]
+ 
+    result = filter_tags(tags, exclude=["fact-checking"])
+ 
+    assert result == ["economy", "inflation"]
+ 
+ 
+def test_filter_tags_limits_to_five():
+    tags = ["a", "b", "c", "d", "e", "f", "g"]
+ 
+    result = filter_tags(tags, exclude=[])
+ 
+    assert result == ["a", "b", "c", "d", "e"]
+ 
+ 
+def test_filter_tags_is_case_insensitive_for_exclusions():
+    tags = ["Fact-Checking", "economy"]
+ 
+    result = filter_tags(tags, exclude=["fact-checking"])
+ 
+    assert result == ["economy"]
+ 
+ 
+def test_filter_tags_accepts_custom_exclude_list():
+    tags = ["news", "economy", "inflation"]
+ 
+    result = filter_tags(tags, exclude=["news"])
+ 
+    assert result == ["economy", "inflation"]
+ 
+ 
+def test_filter_tags_handles_empty_list():
+    assert filter_tags([], exclude=[]) == []
+ 
+ 
+def test_filter_tags_defaults_to_no_exclusions():
+    tags = ["economy", "inflation"]
+ 
+    result = filter_tags(tags)
+ 
+    assert result == ["economy", "inflation"]
