@@ -1,6 +1,6 @@
 import pandas as pd
  
-from transform import build_dataframe, clean_list_value, clean_text_value, filter_tags
+from transform import build_dataframe, clean_list_value, clean_text_value, filter_tags, clean_bool_value
 
 
 def test_build_dataframe_from_list_of_dicts():
@@ -89,3 +89,18 @@ def test_filter_tags_defaults_to_no_exclusions():
     result = filter_tags(tags)
  
     assert result == ["economy", "inflation"]
+
+def test_clean_bool_value_keeps_true_as_true():
+    assert clean_bool_value(True) is True
+ 
+ 
+def test_clean_bool_value_keeps_false_as_false():
+    assert clean_bool_value(False) is False
+ 
+ 
+def test_clean_bool_value_converts_none_to_false():
+    assert clean_bool_value(None) is False
+ 
+ 
+def test_clean_bool_value_converts_non_bool_to_false():
+    assert clean_bool_value("true") is False

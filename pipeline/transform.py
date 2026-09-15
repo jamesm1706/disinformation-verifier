@@ -30,4 +30,6 @@ def filter_tags(tags: list[str], exclude: list[str] = None, max_tags: int = 5) -
     return filtered[:max_tags]
  
 
- 
+def clean_bool_value(value):
+    """Return value if it's a bool, else False."""
+    return value if isinstance(value, bool) else False
