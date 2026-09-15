@@ -33,3 +33,11 @@ def filter_tags(tags: list[str], exclude: list[str] = None, max_tags: int = 5) -
 def clean_bool_value(value):
     """Return value if it's a bool, else False."""
     return value if isinstance(value, bool) else False
+
+
+def clean_categorical_value(value, allowed: list[str]) -> str:
+    """Return the lowercased value if it's in allowed, else "unknown"."""
+    allowed_lower = {a.lower() for a in allowed}
+    if isinstance(value, str) and value.lower() in allowed_lower:
+        return value.lower()
+    return "unknown"

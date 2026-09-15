@@ -1,6 +1,6 @@
 import pandas as pd
  
-from transform import build_dataframe, clean_list_value, clean_text_value, filter_tags, clean_bool_value
+from transform import build_dataframe, clean_list_value, clean_text_value, filter_tags, clean_bool_value, clean_categorical_value
 
 
 def test_build_dataframe_from_list_of_dicts():
@@ -104,3 +104,23 @@ def test_clean_bool_value_converts_none_to_false():
  
 def test_clean_bool_value_converts_non_bool_to_false():
     assert clean_bool_value("true") is False
+
+
+CLAIM_TYPES = ["factual", "statistical", "opinion", "prediction", "quote"]
+VERDICTS = ["verified", "disputed", "unsupported"]
+ 
+ 
+def test_clean_categorical_value_keeps_valid_value():
+    assert clean_categorical_value("factual", CLAIM_TYPES) == "factual"
+ 
+ 
+def test_clean_categorical_value_converts_invalid_value_to_unknown():
+    assert clean_categorical_value("nonsense", CLAIM_TYPES) == "unknown"
+ 
+ 
+def test_clean_categorical_value_converts_none_to_unknown():
+    assert clean_categorical_value(None, VERDICTS) == "unknown"
+ 
+ 
+def test_clean_categorical_value_is_case_insensitive():
+    assert clean_categorical_value("Verified", VERDICTS) == "verified"
