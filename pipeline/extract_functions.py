@@ -6,11 +6,11 @@ from pydantic import BaseModel, Field
 from typing import Literal
 
 
-def extract(claim: str):
+def extract(claim: str, site: str):
     firecrawl = Firecrawl(api_key=os.environ["API_KEY"])
     results = firecrawl.search(
-        query=f'"{claim}" site:bbc.co.uk/news/articles OR site:reuters.com/fact-check OR site:fullfact.org',
-        limit=5, scrape_options={"formats": ["markdown"]},
+        query=f'"{claim}" site:{site}',
+        limit=5, scrape_options={"formats": ["markdown", "links"]},
     )
     output = []
     for r in results.web:
@@ -24,8 +24,8 @@ class Claim(BaseModel):
     claim_type: Literal["factual", "statistical", "opinion", "prediction", "quote"] = Field(
         description="Factual/statistical claims are checkable; opinions and predictions usually aren't"
     )
-    entities: list[str] = Field(
-        description="People, organizations, or places named in the claim")
+    tags: list[str] = Field(
+        description="Topic tags for the claim, e.g. 'politics', 'health', 'climate'")
     checkable: bool = Field(
         description="True if this claim can plausibly be verified against a source")
 
@@ -40,10 +40,8 @@ class InputAnalysis(BaseModel):
 
 def get_claims_from_user(text: str) -> dict:
     """Send text to LLM service using the official OpenAI SDK."""
-    # Automatically checks OPENAI_API_KEY (or LUNA_API_KEY fallback)
     api_key = os.environ["OPENAI_API_KEY"]
     base_url = os.environ["OPENAI_BASE_URL"]
-    # If base_url is None, the SDK defaults to api.openai.com/v1
     client = OpenAI(
         api_key=api_key,
         base_url=base_url,
@@ -51,16 +49,19 @@ def get_claims_from_user(text: str) -> dict:
     prompt = f"""
     Analyze the following article text:
     1. Extract specific key claims and statements from the article, ensuring each claim is individual and atomic.
-    2. Return the extracted claims and statements in a structured JSON format.
+    2. Assign relevant topic tags to each claim based on its content.
+    3. Assign a type to each claim based on its content.
+    4. Determine if the claim is checkable.
+    5. Return the extracted claims and statements in a structured JSON format.
     Text:
-    {text[:4000]}
+    {text}
     """
     response = client.beta.chat.completions.parse(
-        model="gpt-4o-mini",
+        model="gpt-5.6-luna",
         messages=[
             {
                 "role": "system",
-                "content": "You are a precise data extraction assistant.",
+                "content": "You are a precise data extraction and assignment assistant.",
             },
             {"role": "user", "content": prompt},
         ],
@@ -70,22 +71,21 @@ def get_claims_from_user(text: str) -> dict:
 
 
 class VerdictResult(BaseModel):
-    verdict: Literal["verified", "disputed", "unsupported"]
+    verdict: Literal["Supported", "Contradicted",
+                     "Missing/Mixed Context", "Unclear"]
     reasoning: str
     entities: list[str] = Field(
         description="People, organizations, or places named in the claim")
     tags: list[str] = Field(
         description="Topic tags for the verdict, e.g. 'politics', 'health', 'climate'")
     sources: list[str] = Field(
-        description="URLs or source names that informed the verdict")
+        description="Article URL that the verdict is based on.")
 
 
 def compare_claims_with_article(user_text: str, article_text: str) -> dict:
     """Send text to LLM service using the official OpenAI SDK."""
-    # Automatically checks OPENAI_API_KEY (or LUNA_API_KEY fallback)
     api_key = os.environ["OPENAI_API_KEY"]
     base_url = os.environ["OPENAI_BASE_URL"]
-    # If base_url is None, the SDK defaults to api.openai.com/v1
     client = OpenAI(
         api_key=api_key,
         base_url=base_url,
@@ -95,12 +95,12 @@ def compare_claims_with_article(user_text: str, article_text: str) -> dict:
     1. Compare the article's claims with the user's claim and identify any agreements or discrepancies.
     2. Return whether the user's claim is verified, disputed, or unsupported based on the article's content.
     User Claim:
-    {user_text[:4000]}
+    {user_text}
     Article Highlights:
-    {article_text[:4000]}
+    {article_text}
     """
     response = client.beta.chat.completions.parse(
-        model="gpt-4o-mini",
+        model="gpt-5.6-luna",
         messages=[
             {
                 "role": "system",
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     for claim in analysis["claims"]:
         if not claim["checkable"]:
             continue
-        article_text = extract(claim["text"])
+        article_text = extract(claim["text"], "bbc.co.uk/news/articles")
         result = compare_claims_with_article(claim["text"], article_text)
         print(result)
 """
