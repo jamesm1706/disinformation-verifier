@@ -3,3 +3,4 @@ pandas
 pytest
 pylint
 plotly
+pathlib

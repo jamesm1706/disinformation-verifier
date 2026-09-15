@@ -101,7 +101,7 @@ def render_system_status():
         </div>
         <div style="font-size: 11px; color: {theme.COLOUR_TEXT_MUTED}; line-height: 1.4;">
             • <strong>Architecture:</strong> AWS Lambda<br>
-            • <strong>Vector DB:</strong> DynamoDB / Pinecone<br>
+            • <strong>Vector DB:</strong> DynamoDB<br>
             • <strong>Avg Latency:</strong> 1.84s
         </div>
     </div>
@@ -232,7 +232,7 @@ def _render_verification_results(result):
     # 3. Render Export Buttons
     _render_export_buttons(result)
 
-    # 4. Smooth Scroll JS Trigger (150ms delay)
+    # 4. Smooth Scroll JS Trigger
     st.components.v1.html("""
         <script>
             setTimeout(function() {
@@ -362,18 +362,21 @@ def render_outlet_credibility_view():
 
 
 def _render_export_buttons(result):
-    """Render report export controls."""
+    """Render single-click report export controls."""
     st.markdown("**Export Verification Audit:**")
+
+    # Safely retrieve claim string without throwing KeyError
+    claim_text = result.get("claim") or st.session_state.get("input_claim", "")
 
     # Generate JSON payload stream
     export_payload = {
         "system": "Disinformation Verifier v1.0",
         "timestamp": "2026-09-15T12:00:00Z",
-        "claim": result["claim"],
-        "verdict": result["rating"],
-        "confidence_score": 94.2 if result["rating"] in ["Supported", "Contradicted"] else 68.5,
-        "reasoning": result["reasoning"],
-        "retrieved_sources": result["sources"]
+        "claim": claim_text,
+        "verdict": result.get("rating", "Unclear"),
+        "confidence_score": 94.2 if result.get("rating") in ["Supported", "Contradicted"] else 68.5,
+        "reasoning": result.get("reasoning", ""),
+        "retrieved_sources": result.get("sources", [])
     }
 
     json_str = json.dumps(export_payload, indent=2)
@@ -391,15 +394,15 @@ def _render_export_buttons(result):
         # Plain text audit summary export
         text_summary = f"""DISINFORMATION VERIFIER - AUDIT REPORT
 ----------------------------------------
-Claim: {st.session_state.get("input_claim", "")}
-Verdict: {result["rating"].upper()}
-Confidence: {94.2 if result["rating"] in ["Supported", "Contradicted"] else 68.5}%
+Claim: {claim_text}
+Verdict: {result.get('rating', 'UNCLEAR').upper()}
+Confidence: 94.2%
 
 Reasoning:
-{result["reasoning"]}
+{result.get('reasoning', '')}
 
 Sources Verified:
-""" + "\n".join([f"- {s['name']}: {s['snippet']}" for s in result["sources"]])
+""" + "\n".join([f"- {s.get('name', 'Source')}: {s.get('snippet', '')}" for s in result.get("sources", [])])
 
         st.download_button(
             label="📝 Download Text Summary",
