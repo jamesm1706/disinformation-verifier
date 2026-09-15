@@ -99,7 +99,7 @@ def test_render_outlet_analytics_chart():
 def app():
     """Fixture to initialize AppTest instance."""
 
-    at = AppTest.from_file("app.py")
+    at = AppTest.from_file(__file__.replace("test_frontend.py", "app.py"))
     at.run()
     return at
 
