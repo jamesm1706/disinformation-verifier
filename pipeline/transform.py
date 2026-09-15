@@ -6,12 +6,16 @@ logger = logging.getLogger(__name__)
  
  
 def build_dataframe(records: list[dict]) -> pd.DataFrame:
-    """Convert a list of claim/verdict record dicts into a pandas DataFrame."""
+    """Convert a list of dicts into a DataFrame."""
     return pd.DataFrame(records)
-
-def clean_list_columns(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
-    """Ensure list-valued columns contain clean, consistent lists."""
-    df = df.copy()
-    for column in columns:
-        df[column] = df[column].apply(lambda value: value if isinstance(value, list) else [])
-    return df
+ 
+ 
+def clean_list_value(value):
+    """Return value if it's a list, else an empty list."""
+    return value if isinstance(value, list) else []
+ 
+ 
+def clean_text_value(value):
+    """Return a stripped string, or "" if not a string."""
+    return value.strip() if isinstance(value, str) else ""
+ 

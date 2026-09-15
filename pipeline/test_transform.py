@@ -1,6 +1,6 @@
 import pandas as pd
  
-from transform import build_dataframe, clean_list_columns
+from transform import build_dataframe, clean_list_value, clean_text_value
 
 
 def test_build_dataframe_from_list_of_dicts():
@@ -22,35 +22,26 @@ def test_build_dataframe_from_empty_list():
     assert isinstance(df, pd.DataFrame)
     assert len(df) == 0
  
-
-def test_clean_list_columns_keeps_lists_as_lists():
-    df = pd.DataFrame({
-        "id": [1, 2],
-        "tags": [["a", "b"], ["c"]],
-    })
  
-    cleaned = clean_list_columns(df, columns=["tags"])
- 
-    assert cleaned["tags"].tolist() == [["a", "b"], ["c"]]
+def test_clean_list_value_keeps_a_list_as_is():
+    assert clean_list_value(["a", "b"]) == ["a", "b"]
  
  
-def test_clean_list_columns_converts_missing_values_to_empty_list():
-    df = pd.DataFrame({
-        "id": [1, 2],
-        "tags": [["a"], None],
-    })
- 
-    cleaned = clean_list_columns(df, columns=["tags"])
- 
-    assert cleaned["tags"].tolist() == [["a"], []]
+def test_clean_list_value_converts_none_to_empty_list():
+    assert clean_list_value(None) == []
  
  
-def test_clean_list_columns_leaves_other_columns_untouched():
-    df = pd.DataFrame({
-        "id": [1],
-        "tags": [["a"]],
-    })
+def test_clean_list_value_converts_non_list_to_empty_list():
+    assert clean_list_value("not a list") == []
  
-    cleaned = clean_list_columns(df, columns=["tags"])
  
-    assert cleaned["id"].tolist() == [1]
+def test_clean_text_value_strips_whitespace():
+    assert clean_text_value("  hello  ") == "hello"
+ 
+ 
+def test_clean_text_value_converts_none_to_empty_string():
+    assert clean_text_value(None) == ""
+ 
+ 
+def test_clean_text_value_converts_non_string_to_empty_string():
+    assert clean_text_value(123) == ""
