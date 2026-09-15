@@ -41,3 +41,14 @@ def clean_categorical_value(value, allowed: list[str]) -> str:
     if isinstance(value, str) and value.lower() in allowed_lower:
         return value.lower()
     return "unknown"
+
+def dedupe_list(values: list[str]) -> list[str]:
+    """Remove case-insensitive duplicates, preserving first-seen order."""
+    seen = set()
+    result = []
+    for value in values:
+        key = value.lower()
+        if key not in seen:
+            seen.add(key)
+            result.append(value)
+    return result

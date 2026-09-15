@@ -1,6 +1,7 @@
 import pandas as pd
  
-from transform import build_dataframe, clean_list_value, clean_text_value, filter_tags, clean_bool_value, clean_categorical_value
+from transform import (build_dataframe, clean_list_value, clean_text_value, filter_tags, clean_bool_value, 
+                       clean_categorical_value, dedupe_list)
 
 
 def test_build_dataframe_from_list_of_dicts():
@@ -124,3 +125,18 @@ def test_clean_categorical_value_converts_none_to_unknown():
  
 def test_clean_categorical_value_is_case_insensitive():
     assert clean_categorical_value("Verified", VERDICTS) == "verified"
+
+def test_dedupe_list_removes_exact_duplicates():
+    assert dedupe_list(["UK", "UK", "ONS"]) == ["UK", "ONS"]
+ 
+ 
+def test_dedupe_list_is_case_insensitive():
+    assert dedupe_list(["UK", "uk", "ONS"]) == ["UK", "ONS"]
+ 
+ 
+def test_dedupe_list_preserves_order():
+    assert dedupe_list(["b", "a", "b", "c"]) == ["b", "a", "c"]
+ 
+ 
+def test_dedupe_list_handles_empty_list():
+    assert dedupe_list([]) == []
