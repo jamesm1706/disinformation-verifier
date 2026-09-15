@@ -16,7 +16,7 @@ def extract_url(url: str) -> dict:
 
         return {
             "title": article.title,
-            "text": article.text,
+            "text": article.text
         }
 
     except Exception as e:
