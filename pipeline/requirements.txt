@@ -1,5 +1,8 @@
+pylint
+pytest
 pydantic
 python-dotenv
 firecrawl-py
 openai
 pandas
+boto3
