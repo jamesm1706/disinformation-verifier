@@ -4,4 +4,5 @@ pydantic
 python-dotenv
 firecrawl-py
 openai
+pytest
 boto3
