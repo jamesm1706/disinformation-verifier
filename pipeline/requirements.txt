@@ -5,3 +5,5 @@ python-dotenv
 firecrawl-py
 openai
 boto3
+newspaper3k
+lxml[html-clean]
