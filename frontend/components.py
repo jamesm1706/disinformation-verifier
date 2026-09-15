@@ -362,7 +362,7 @@ def render_outlet_credibility_view():
 
 
 def _render_export_buttons(result):
-    """Render sreport export controls."""
+    """Render report export controls."""
     st.markdown("**Export Verification Audit:**")
 
     # Generate JSON payload stream
