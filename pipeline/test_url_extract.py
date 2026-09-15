@@ -4,10 +4,12 @@
 Test for the url_extract.py file
 """
 import pytest
+import logging
 from url_extract import extract_url
 
 
-def test_extract_url_valid(mocker):
+def test_extract_url_valid(mocker, caplog):
+    caplog.set_level(logging.INFO)
     mock_article = mocker.Mock()
 
     mock_article.title = "Test Title"
@@ -29,9 +31,10 @@ def test_extract_url_valid(mocker):
     mock_article_class.assert_called_once_with(url)
     mock_article.download.assert_called_once_with()
     mock_article.parse.assert_called_once_with()
+    assert "Successfully extracted from URL" in caplog.text
 
 
-def test_extract_url_invalid(mocker):
+def test_extract_url_invalid(mocker, caplog):
     mock_article = mocker.Mock()
 
     message = Exception("Failed")
@@ -49,3 +52,4 @@ def test_extract_url_invalid(mocker):
     }
 
     assert extract_url(url) == result
+    assert "Cannot extract from URL" in caplog.text
