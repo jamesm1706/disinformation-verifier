@@ -32,9 +32,9 @@ def render_outlet_analytics_chart():
 
     # Map brand theme colors to each verdict type
     colour_map = {
-        "Supported": "#10B981",        # Emerald Green
-        "Contradicted": "#EF4444",      # Vibrant Coral Red
-        "Missing Context": "#F59E0B"   # Warm Amber/Gold
+        "Supported": theme.COLOUR_SUCCESS_FG,
+        "Contradicted": theme.COLOUR_DANGER_FG,
+        "Missing Context": theme.COLOUR_WARNING_FG
     }
 
     fig = px.bar(
