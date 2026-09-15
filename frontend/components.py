@@ -45,41 +45,86 @@ def render_verdict_badge(rating: str):
 
 
 def render_claim_verification_view():
-    """View 1: Main Verification Form & Results Layout."""
+    """View 1: Main Verification Form & Results Layout with Quick Demo Fill."""
     render_page_header(
         "Claim Verification Workspace",
         "Submit headlines, quotes, or social media statements to check against primary fact-checking records."
     )
 
-    # Use native Streamlit containers wrapped inside a single custom card div
-    st.markdown('<div class="ui-card">', unsafe_allow_html=True)
+    # Initialise session state keys for inputs if they don't exist
+    if "input_claim" not in st.session_state:
+        st.session_state.input_claim = ""
+    if "input_url" not in st.session_state:
+        st.session_state.input_url = ""
 
+    # Quick Sample Presets
+    st.markdown("**Try a Sample Newsroom Claim:**")
+
+    col_demo1, col_demo2, col_demo3 = st.columns(3)
+
+    with col_demo1:
+        if st.button("🍋 Lemon Water Cure", key="demo_lemon", use_container_width=True):
+            st.session_state.input_claim = "Viral social media posts claim that drinking warm lemon water daily completely cures type 2 diabetes."
+            st.session_state.input_url = "https://example-newsroom.com/health/viral-lemon-claim"
+            st.rerun()
+
+    with col_demo2:
+        if st.button("⚡ EV Tax Changes", key="demo_ev", use_container_width=True):
+            st.session_state.input_claim = "Government announcing emergency removal of all EV purchase tax credits starting next month."
+            st.session_state.input_url = "https://example-newsroom.com/policy/ev-tax-breakdown"
+            st.rerun()
+
+    with col_demo3:
+        if st.button("💶 Central Bank Rates", key="demo_bank", use_container_width=True):
+            st.session_state.input_claim = "Leaked internal memo shows central bank planning an emergency 200 basis point rate cut."
+            st.session_state.input_url = "https://example-newsroom.com/finance/rate-cut-rumor"
+            st.rerun()
+
+    st.markdown("---")
+
+    # Main Verification Input Form
     with st.form("claim_input_form", clear_on_submit=False):
         claim_input = st.text_area(
             "Statement or Headline Text",
+            value=st.session_state.input_claim,
             placeholder="e.g., 'Viral post claims drinking lemon water completely reverses diabetes...'",
-            height=120
+            height=100
         )
         url_input = st.text_input(
-            "Source Link (Optional)", placeholder="https://example.com/news/article")
+            "Source Link (Optional)",
+            value=st.session_state.input_url,
+            placeholder="https://example.com/news/article"
+        )
 
         submit = st.form_submit_button("Verify Claim")
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
+    # Submission & Results Output
     if submit:
         result = fn.verify_claim(claim_input, url_input)
         if not result:
-            st.warning("Please provide a statement or URL to verify.")
+            st.warning(
+                "Please select a sample claim above or enter text to verify.")
             return
 
-        st.markdown('<div class="ui-card">', unsafe_allow_html=True)
+        st.markdown("---")
         st.markdown("### Verification Summary")
 
-        render_verdict_badge(result["rating"])
+        # Split Verdict Badge and Confidence Gauge into two columns
+        col_verdict, col_gauge = st.columns([1, 1])
 
-        st.markdown("**Reasoning Explanation:**")
-        st.markdown(result["reasoning"])
+        with col_verdict:
+            st.markdown("<br>", unsafe_allow_html=True)
+            render_verdict_badge(result["rating"])
+            st.markdown("**Reasoning Explanation:**")
+            st.markdown(result["reasoning"])
+
+        with col_gauge:
+            # Mock confidence score based on stub rating (e.g., 94% for supported/contradicted)
+            confidence = 94.2 if result["rating"] in [
+                "Supported", "Contradicted"] else 68.5
+            fig = vis.render_confidence_gauge(confidence, result["rating"])
+            st.plotly_chart(fig, use_container_width=True,
+                            config={'displayModeBar': False})
 
         st.markdown("---")
         st.markdown("**Retrieved Source Evidence:**")
@@ -91,8 +136,6 @@ def render_claim_verification_view():
                 <span style="font-size: 14px; color: {theme.COLOUR_TEXT_MUTED};">"{src['snippet']}"</span>
             </div>
             """, unsafe_allow_html=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_breaking_stories_view():
