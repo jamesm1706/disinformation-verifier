@@ -106,6 +106,10 @@ def render_claim_verification_view():
                 "Please select a sample claim above or enter text to verify.")
             return
 
+        # 1. Invisible Scroll Anchor Placement
+        st.markdown('<div id="verification-results"></div>',
+                    unsafe_allow_html=True)
+
         st.markdown("---")
         st.markdown("### Verification Summary")
 
@@ -119,7 +123,6 @@ def render_claim_verification_view():
             st.markdown(result["reasoning"])
 
         with col_gauge:
-            # Mock confidence score based on stub rating (e.g., 94% for supported/contradicted)
             confidence = 94.2 if result["rating"] in [
                 "Supported", "Contradicted"] else 68.5
             fig = vis.render_confidence_gauge(confidence, result["rating"])
@@ -136,6 +139,18 @@ def render_claim_verification_view():
                 <span style="font-size: 14px; color: {theme.COLOUR_TEXT_MUTED};">"{src['snippet']}"</span>
             </div>
             """, unsafe_allow_html=True)
+
+        # 2. Smooth Scroll Trigger with 150ms delay for chart rendering
+        st.components.v1.html("""
+            <script>
+                setTimeout(function() {
+                    var target = window.parent.document.getElementById("verification-results");
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }, 150);
+            </script>
+        """, height=0)
 
 
 def render_breaking_stories_view():
