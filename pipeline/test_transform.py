@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from pipeline.transform import (
+from transform import (
     build_dataframe,
     clean_bool_value,
     clean_categorical_value,
