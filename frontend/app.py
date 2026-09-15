@@ -16,6 +16,7 @@ st.set_page_config(
 theme.inject_custom_theme()
 
 components.render_sidebar_logo()
+components.render_system_status()
 
 view = st.sidebar.radio(
     "Navigation",
