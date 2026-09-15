@@ -3,24 +3,51 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.express as px
 import theme
 
 
 def render_outlet_analytics_chart():
-    """Render verdict breakdown bar chart."""
-    chart_data = pd.DataFrame({
-        "Publisher": ["Reuters Fact Check", "BBC Verify", "Full Fact"],
-        "Supported": [45, 30, 60],
-        "Contradicted": [120, 95, 140],
-        "Missing Context": [30, 40, 55]
-    }).set_index("Publisher")
+    """Render an interactive bar chart of verifications grouped by publisher."""
 
-    st.bar_chart(chart_data)
+    data = {
+        "Publisher": ["Full Fact", "FactCheck.org", "PolitiFact", "Reuters Fact Check", "AP Fact Check"],
+        "Verified Claims": [412, 328, 245, 180, 83],
+        "Accuracy Rating": ["98%", "96%", "95%", "99%", "97%"]
+    }
+
+    fig = px.bar(
+        data,
+        x="Publisher",
+        y="Verified Claims",
+        text="Verified Claims",
+        color_discrete_sequence=[theme.COLOUR_PRIMARY]
+    )
+
+    fig.update_traces(
+        texttemplate='%{text}',
+        textposition='outside',
+        marker_line_color=theme.COLOUR_TEXT_MAIN,
+        marker_line_width=1
+    )
+
+    fig.update_layout(
+        height=320,
+        margin=dict(l=20, r=20, t=30, b=40),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        xaxis_title="",
+        yaxis_title="Total Ingested Claims",
+        font=dict(color=theme.COLOUR_TEXT_MAIN),
+        yaxis=dict(showgrid=True, gridcolor=theme.COLOUR_BORDER)
+    )
+
+    return fig
 
 
 def render_confidence_gauge(confidence_score: float, rating: str):
-    """
-    Render an enterprise confidence gauge chart."""
+    """Render an enterprise confidence chart."""
+
     # Pick indicator color based on verdict rating
     if rating == "Supported":
         bar_color = theme.COLOUR_SUCCESS_FG
