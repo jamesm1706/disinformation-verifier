@@ -44,10 +44,10 @@ def test_get_filtered_logs_no_filter():
 # Unsuccessful path tests and edge cases
 
 def test_verify_claim_empty_input():
-    """Empty or whitespace input should return an empty dictionary."""
+    """Empty or whitespace input should return None."""
 
-    assert fn.verify_claim("", "") == {}
-    assert fn.verify_claim("   ", "") == {}
+    assert fn.verify_claim("", "") is None
+    assert fn.verify_claim("   ", "") is None
 
 
 def test_verify_claim_extremely_long_input():
