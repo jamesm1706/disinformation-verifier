@@ -275,88 +275,80 @@ def render_claim_verification_view():
 
 def render_breaking_stories_view():
     """Clean Breaking News Feed."""
-    render_page_header("Top Breaking Claims",
-                       "Recent claims indexed from primary fact-checking outlets.")
+
+    render_page_header(
+        "Top Breaking Claims",
+        "Recent claims indexed from primary fact-checking outlets."
+    )
 
     items = fn.get_breaking_claims()
     for item in items:
-        st.markdown(
-            '<div class="ui-card" style="padding: 16px 24px;">', unsafe_allow_html=True)
-        col_content, col_badge = st.columns([4, 1.5])
+        with st.container(border=True):
+            col_content, col_badge = st.columns([4, 1.5])
 
-        with col_content:
-            st.markdown(
-                f"<span style='font-size: 12px; color: {theme.COLOUR_TEXT_MUTED};'>{item['time']} • {item['outlet']}</span>", unsafe_allow_html=True)
-            st.markdown(
-                f"<strong style='font-size: 16px; color: {theme.COLOUR_TEXT_MAIN};'>{item['title']}</strong>", unsafe_allow_html=True)
+            with col_content:
+                st.markdown(
+                    f"<span style='font-size: 12px; color: {theme.COLOUR_TEXT_MUTED};'>{item['time']} • {item['outlet']}</span>",
+                    unsafe_allow_html=True
+                )
+                st.markdown(
+                    f"<strong style='font-size: 16px; color: {theme.COLOUR_TEXT_MAIN};'>{item['title']}</strong>",
+                    unsafe_allow_html=True
+                )
 
-        with col_badge:
-            render_verdict_badge(item["status"])
-
-        st.markdown('</div>', unsafe_allow_html=True)
+            with col_badge:
+                render_verdict_badge(item["status"])
 
 
 def render_verification_logs_view():
     """Filterable Data Table."""
-    render_page_header("Verification History Logs",
-                       "Search and review past newsroom claim checks.")
 
-    st.markdown('<div class="ui-card">', unsafe_allow_html=True)
-    c1, c2 = st.columns([3, 1])
-    with c1:
-        query = st.text_input("Filter by Keyword",
-                              placeholder="Search claim keywords...")
-    with c2:
-        status = st.selectbox("Verdict Filter", [
-                              "All", "Supported", "Contradicted", "Missing Context", "Unclear"])
-    st.markdown('</div>', unsafe_allow_html=True)
+    render_page_header(
+        "Verification History Logs",
+        "Search and review past newsroom claim checks."
+    )
+
+    # Filter Controls Container
+    with st.container(border=True):
+        c1, c2 = st.columns([3, 1])
+        with c1:
+            query = st.text_input("Filter by Keyword",
+                                  placeholder="Search claim keywords...")
+        with c2:
+            status = st.selectbox(
+                "Verdict Filter",
+                ["All", "Supported", "Contradicted", "Missing Context", "Unclear"]
+            )
 
     df = fn.get_filtered_logs(query, status)
 
-    st.markdown('<div class="ui-card">', unsafe_allow_html=True)
+    # Data Table Output
     st.dataframe(df, use_container_width=True, hide_index=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_outlet_credibility_view():
     """Metric Cards & Data Analytics."""
+
     render_page_header(
         "Outlet Source Analytics",
         "Distribution metrics across ingested fact-checking partners and model performance."
     )
 
-    # Executive KPI Metric Cards
     m1, m2, m3, m4 = st.columns(4)
 
     with m1:
-        st.metric(
-            label="Total Claims Checked",
-            value="1,248",
-            delta="+14% this month"
-        )
+        st.metric(label="Total Claims Checked",
+                  value="1,248", delta="+14% this month")
     with m2:
-        st.metric(
-            label="Primary Source",
-            value="Full Fact",
-            delta="33% share"
-        )
+        st.metric(label="Primary Source", value="Full Fact", delta="33% share")
     with m3:
-        st.metric(
-            label="Avg Model Latency",
-            value="1.84s",
-            delta="-0.4s optimized",
-            delta_color="inverse"
-        )
+        st.metric(label="Avg Model Latency", value="1.84s",
+                  delta="-0.4s optimized", delta_color="inverse")
     with m4:
-        st.metric(
-            label="Vector Index Accuracy",
-            value="97.3%",
-            delta="+1.2%"
-        )
+        st.metric(label="Vector Index Accuracy", value="97.3%", delta="+1.2%")
 
     st.markdown("---")
 
-    # Interactive Publisher Breakdown Chart
     st.markdown("### Verifications by Fact-Checking Publisher")
     st.markdown(
         f"<p style='font-size: 13px; color: {theme.COLOUR_TEXT_MUTED}; margin-bottom: 16px;'>"

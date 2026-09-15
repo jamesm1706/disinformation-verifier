@@ -8,38 +8,57 @@ import theme
 
 
 def render_outlet_analytics_chart():
-    """Render an interactive bar chart of verifications grouped by publisher."""
+    """Render an interactive stacked bar chart showing verdict breakdowns per publisher."""
+    # Data breakdown for each fact-checking partner
+    data = [
+        {"Publisher": "Full Fact", "Verdict": "Supported", "Claims": 240},
+        {"Publisher": "Full Fact", "Verdict": "Contradicted", "Claims": 130},
+        {"Publisher": "Full Fact", "Verdict": "Missing Context", "Claims": 42},
+        {"Publisher": "FactCheck.org", "Verdict": "Supported", "Claims": 180},
+        {"Publisher": "FactCheck.org", "Verdict": "Contradicted", "Claims": 110},
+        {"Publisher": "FactCheck.org", "Verdict": "Missing Context", "Claims": 38},
+        {"Publisher": "PolitiFact", "Verdict": "Supported", "Claims": 95},
+        {"Publisher": "PolitiFact", "Verdict": "Contradicted", "Claims": 120},
+        {"Publisher": "PolitiFact", "Verdict": "Missing Context", "Claims": 30},
+        {"Publisher": "Reuters", "Verdict": "Supported", "Claims": 115},
+        {"Publisher": "Reuters", "Verdict": "Contradicted", "Claims": 45},
+        {"Publisher": "Reuters", "Verdict": "Missing Context", "Claims": 20},
+        {"Publisher": "AP Fact Check", "Verdict": "Supported", "Claims": 50},
+        {"Publisher": "AP Fact Check", "Verdict": "Contradicted", "Claims": 25},
+        {"Publisher": "AP Fact Check", "Verdict": "Missing Context", "Claims": 8},
+    ]
 
-    data = {
-        "Publisher": ["Full Fact", "FactCheck.org", "PolitiFact", "Reuters Fact Check", "AP Fact Check"],
-        "Verified Claims": [412, 328, 245, 180, 83],
-        "Accuracy Rating": ["98%", "96%", "95%", "99%", "97%"]
+    df = pd.DataFrame(data)
+
+    # Map brand theme colors to each verdict type
+    colour_map = {
+        "Supported": "#10B981",        # Emerald Green
+        "Contradicted": "#EF4444",      # Vibrant Coral Red
+        "Missing Context": "#F59E0B"   # Warm Amber/Gold
     }
 
     fig = px.bar(
-        data,
+        df,
         x="Publisher",
-        y="Verified Claims",
-        text="Verified Claims",
-        color_discrete_sequence=[theme.COLOUR_PRIMARY]
-    )
-
-    fig.update_traces(
-        texttemplate='%{text}',
-        textposition='outside',
-        marker_line_color=theme.COLOUR_TEXT_MAIN,
-        marker_line_width=1
+        y="Claims",
+        color="Verdict",
+        color_discrete_map=colour_map,
+        title="",
+        barmode="stack"
     )
 
     fig.update_layout(
-        height=320,
-        margin=dict(l=20, r=20, t=30, b=40),
+        height=360,
+        margin=dict(l=20, r=20, t=20, b=40),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         xaxis_title="",
-        yaxis_title="Total Ingested Claims",
+        yaxis_title="Volume of Claims",
+        legend_title_text="Verdict Breakdown",
         font=dict(color=theme.COLOUR_TEXT_MAIN),
-        yaxis=dict(showgrid=True, gridcolor=theme.COLOUR_BORDER)
+        yaxis=dict(showgrid=True, gridcolor=theme.COLOUR_BORDER),
+        legend=dict(orientation="h", yanchor="bottom",
+                    y=1.02, xanchor="right", x=1)
     )
 
     return fig
