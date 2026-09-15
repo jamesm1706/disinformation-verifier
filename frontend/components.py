@@ -369,7 +369,7 @@ def _render_export_buttons(result):
     export_payload = {
         "system": "Disinformation Verifier v1.0",
         "timestamp": "2026-09-15T12:00:00Z",
-        "claim": st.session_state.get("input_claim", ""),
+        "claim": result["claim"],
         "verdict": result["rating"],
         "confidence_score": 94.2 if result["rating"] in ["Supported", "Contradicted"] else 68.5,
         "reasoning": result["reasoning"],
