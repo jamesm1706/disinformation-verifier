@@ -6,11 +6,12 @@ from firecrawl_client import extract
 
 
 def handler(event, context):
+    """Handler to verify a claim against an article from a specified fact check site."""
     load_dotenv()
 
     claims_data = event["body"]
     site = event.get("site", "")
-    source_name = event["body"]["source_name"]
+    source_name = event.get("source_name", "")
 
     results = []
 
@@ -29,6 +30,3 @@ def handler(event, context):
         "body": results
 
     }
-
-
-    

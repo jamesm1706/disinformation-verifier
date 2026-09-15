@@ -13,5 +13,5 @@ def extract(claim: str, site: str):
     )
     output = []
     for r in results.web:
-        output.append(r.markdown or r.description)
+        output.append(f"Source URL: {r.url}\n{r.markdown or r.description}")
     return "\n".join(output)

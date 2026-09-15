@@ -2,6 +2,7 @@
 
 
 def handler(event, context):
+    """Handler to collate verification results from parallel Lambdas."""
 
     results = event["body"]
 

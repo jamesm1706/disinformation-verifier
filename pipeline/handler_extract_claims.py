@@ -5,6 +5,7 @@ from llm_client import get_claims_from_user
 
 
 def handler(event, context):
+    """Handler to extract claims from user-provided text."""
     load_dotenv()
     input_text = event.get("user_text", "")
     analysis = get_claims_from_user(input_text)

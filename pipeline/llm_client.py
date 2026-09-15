@@ -25,7 +25,7 @@ def get_claims_from_user(text: str) -> dict:
 
     Note:
     Discard vague summarizing statements like "X promoted their accomplishments" or "X rallied supporters" — these have no checkable content.
-    For claims about what someone said or promised, mark them as "attribution" or "promise" rather than treating them as claims requiring external verification.
+    For claims about what someone said or promised, mark them as "opinion" or "promise" rather than treating them as claims requiring external verification.
 
     Text:
     {text}
@@ -55,8 +55,7 @@ def compare_claims_with_article(user_text: str, article_text: str) -> dict:
     prompt = f"""
     Analyze the following verified article text in relation to the user's claim:
     1. Compare the article's claims with the user's claim and identify any agreements or discrepancies.
-    2. Return whether the user's claim is verified, disputed, or unsupported based on the article's content.
-    User Claim:
+    2. Return exactly one of the allowed verdicts: "Supported", "Contradicted", "Missing/Mixed Context", or "Unclear".    User Claim:
     {user_text}
     Article Highlights:
     {article_text}
