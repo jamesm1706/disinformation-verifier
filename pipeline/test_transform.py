@@ -1,7 +1,7 @@
 import pandas as pd
  
 from transform import (build_dataframe, clean_list_value, clean_text_value, filter_tags, clean_bool_value, 
-                       clean_categorical_value, dedupe_list)
+                       clean_categorical_value, dedupe_list, transform)
 
 
 def test_build_dataframe_from_list_of_dicts():
@@ -140,3 +140,36 @@ def test_dedupe_list_preserves_order():
  
 def test_dedupe_list_handles_empty_list():
     assert dedupe_list([]) == []
+
+def test_transform_produces_clean_dataframe():
+    records = [
+        {
+            "text": "  The UK inflation rate rose to 4% in 2025.  ",
+            "claim_type": "Factual",
+            "entities": ["UK", "uk"],
+            "checkable": True,
+            "verdict": "Unsupported",
+            "reasoning": "  Some reasoning.  ",
+            "verdict_entities": None,
+            "verdict_tags": ["fact-checking", "economy", "inflation"],
+            "sources": ["https://bbc.com/a"],
+        }
+    ]
+ 
+    df = transform(records)
+ 
+    row = df.iloc[0]
+    assert row["text"] == "The UK inflation rate rose to 4% in 2025."
+    assert row["claim_type"] == "factual"
+    assert row["entities"] == ["UK"]
+    assert row["checkable"] == True
+    assert row["verdict"] == "unsupported"
+    assert row["reasoning"] == "Some reasoning."
+    assert row["verdict_entities"] == []
+    assert row["verdict_tags"] == ["economy", "inflation"]
+    assert row["sources"] == ["https://bbc.com/a"]
+ 
+ 
+def test_transform_handles_empty_list():
+    df = transform([])
+    assert len(df) == 0

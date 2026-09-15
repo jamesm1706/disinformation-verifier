@@ -52,3 +52,45 @@ def dedupe_list(values: list[str]) -> list[str]:
             seen.add(key)
             result.append(value)
     return result
+
+
+CLAIM_TYPES = ["factual", "statistical", "opinion", "prediction", "quote"]
+VERDICTS = ["verified", "disputed", "unsupported"]
+ 
+ 
+def transform(records: list[dict]) -> pd.DataFrame:
+    """Build a DataFrame from raw records and clean every column."""
+    df = build_dataframe(records)
+    if df.empty:
+        return df
+ 
+    df["text"] = df["text"].apply(clean_text_value)
+    df["reasoning"] = df["reasoning"].apply(clean_text_value)
+    df["checkable"] = df["checkable"].apply(clean_bool_value)
+    df["claim_type"] = df["claim_type"].apply(lambda v: clean_categorical_value(v, CLAIM_TYPES))
+    df["verdict"] = df["verdict"].apply(lambda v: clean_categorical_value(v, VERDICTS))
+    df["entities"] = df["entities"].apply(clean_list_value).apply(dedupe_list)
+    df["verdict_entities"] = df["verdict_entities"].apply(clean_list_value).apply(dedupe_list)
+    df["verdict_tags"] = df["verdict_tags"].apply(clean_list_value).apply(
+        lambda tags: filter_tags(dedupe_list(tags), exclude=["fact-checking"])
+    )
+    df["sources"] = df["sources"].apply(clean_list_value)
+    return df
+
+
+if __name__ == "__main__":
+    sample_records = [
+        {
+            "text": "  The UK inflation rate rose to 4% in 2025.  ",
+            "claim_type": "Factual",
+            "entities": ["UK", "uk"],
+            "checkable": True,
+            "verdict": "Unsupported",
+            "reasoning": "  Some reasoning.  ",
+            "verdict_entities": None,
+            "verdict_tags": ["fact-checking", "economy", "inflation"],
+            "sources": ["https://bbc.com/a"],
+        }
+    ]
+    cleaned = transform(sample_records)
+    print(cleaned)
