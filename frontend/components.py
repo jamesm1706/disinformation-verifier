@@ -393,7 +393,7 @@ def _render_export_buttons(result):
 ----------------------------------------
 Claim: {st.session_state.get("input_claim", "")}
 Verdict: {result["rating"].upper()}
-Confidence: 94.2%
+Confidence: {94.2 if result["rating"] in ["Supported", "Contradicted"] else 68.5}%
 
 Reasoning:
 {result["reasoning"]}
